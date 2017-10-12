@@ -1,0 +1,104 @@
+package livestartv.livestar.com.fu;
+
+import android.content.Context;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+
+import java.util.List;
+
+/**
+ * Created by Administrator on 2017/10/11 0011.
+ */
+
+public class FupageAdapter extends RecyclerView.Adapter<FupageAdapter.FuHolder> {
+
+    private Context mContext;
+
+    private LayoutInflater mInflater;
+
+    private List<FuItemBean> datas;
+
+    public FupageAdapter(Context mContext,List<FuItemBean> datas) {
+        this.mContext = mContext;
+        this.datas = datas;
+        mInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    }
+
+    @Override
+    public FuHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+
+        View view = mInflater.inflate(R.layout.fu_item, parent, false);
+
+        WindowManager mWindowManager = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
+        int windowW = mWindowManager.getDefaultDisplay().getWidth();
+
+        view.getLayoutParams().width = windowW / 5;
+        view.getLayoutParams().height = windowW / 5;
+
+        return new FuHolder(view);
+    }
+
+    @Override
+    public void onBindViewHolder(FuHolder holder, int position) {
+        holder.bindData(datas.get(position));
+    }
+
+    @Override
+    public int getItemCount() {
+        return datas == null ? 0 : datas.size();
+    }
+
+
+   public  class FuHolder extends RecyclerView.ViewHolder{
+
+        ImageView fuIcon , download;
+        ProgressBar downloadPb;
+
+
+
+        public FuHolder(View itemView) {
+            super(itemView);
+
+            fuIcon = (ImageView) itemView.findViewById(R.id.iv_fu_icon);
+
+            download = (ImageView) itemView.findViewById(R.id.download_iv);
+
+            downloadPb = (ProgressBar) itemView.findViewById(R.id.download_pb);
+
+            //如果本地有的话，不现实下载按钮，
+
+            download.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    download.setVisibility(View.GONE);
+                   //开启下载 ，显示进度条
+                    downloadPb.setVisibility(View.VISIBLE);
+
+                    downloadPb.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            downloadPb.setVisibility(View.GONE);
+                        }
+                    },2000);
+
+                }
+            });
+
+
+        }
+
+        public void bindData(FuItemBean fuItemBean){
+            Glide.with(mContext.getApplicationContext()).load(fuItemBean.getIcon()).diskCacheStrategy(DiskCacheStrategy.ALL).into(fuIcon);
+
+        }
+
+    }
+}
