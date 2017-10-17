@@ -1,15 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#aaffffff"
+    android:orientation="vertical"
    >
+    <livestartv.livestar.com.fu.CirclePageIndicator
+        android:id="@+id/fu_inidcator"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="2dp"
+        app:fillColor="#FDFDFD"
+        app:pageColor="#9D9D9D"
+        app:radius="5dp"
+        android:background="#00EAE9E7"/>
 
     <livestartv.livestar.com.fu.WrapContentHeightViewPager
         android:id="@+id/fu_list_pager"
-        android:background="#2a324e"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
     </livestartv.livestar.com.fu.WrapContentHeightViewPager>
 
-</FrameLayout>
+
+</LinearLayout>

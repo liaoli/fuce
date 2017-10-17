@@ -92,12 +92,11 @@ public class FupageAdapter extends RecyclerView.Adapter<FupageAdapter.FuHolder> 
                 }
             });
 
-
+        //    https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1508130039450&di=1ca02bd97a8f344ccb327e836fecc9fc&imgtype=0&src=http%3A%2F%2Fwww.51edu.com%2Fueditor2014%2Fphp%2Fupload%2Fimage%2F20150216%2F1424069121411681.png
         }
 
         public void bindData(FuItemBean fuItemBean){
-            Glide.with(mContext.getApplicationContext()).load(fuItemBean.getIcon()).diskCacheStrategy(DiskCacheStrategy.ALL).into(fuIcon);
-
+            Glide.with(mContext).load(fuItemBean.getIcon()).diskCacheStrategy(DiskCacheStrategy.ALL).into(fuIcon);
         }
 
     }
