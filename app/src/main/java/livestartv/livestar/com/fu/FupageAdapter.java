@@ -1,6 +1,7 @@
 package livestartv.livestar.com.fu;
 
 import android.content.Context;
+import android.os.Environment;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,10 +10,15 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
+import com.aspsine.multithreaddownload.CallBack;
+import com.aspsine.multithreaddownload.DownloadException;
+import com.aspsine.multithreaddownload.DownloadManager;
+import com.aspsine.multithreaddownload.DownloadRequest;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.Priority;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
+import java.io.File;
 import java.util.List;
 
 /**
@@ -26,6 +32,8 @@ public class FupageAdapter extends RecyclerView.Adapter<FupageAdapter.FuHolder> 
     private LayoutInflater mInflater;
 
     private List<FuItemBean> datas;
+
+    private final File mDownloadDir = new File(Environment.getExternalStorageDirectory(), "Download");
 
     public FupageAdapter(Context mContext,List<FuItemBean> datas) {
         this.mContext = mContext;
@@ -62,6 +70,7 @@ public class FupageAdapter extends RecyclerView.Adapter<FupageAdapter.FuHolder> 
 
         ImageView fuIcon , download;
         ProgressBar downloadPb;
+       FuItemBean fuItemBean;
 
 
 
@@ -74,29 +83,74 @@ public class FupageAdapter extends RecyclerView.Adapter<FupageAdapter.FuHolder> 
 
             downloadPb = (ProgressBar) itemView.findViewById(R.id.download_pb);
 
-            //如果本地有的话，不现实下载按钮，
-
             download.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    download.setVisibility(View.GONE);
-                   //开启下载 ，显示进度条
-                    downloadPb.setVisibility(View.VISIBLE);
+                    DownloadRequest request = new DownloadRequest.Builder()
+                            .setName(fuItemBean.getName() + ".bundle")
+                            .setUri(fuItemBean.getBundle())
+                            .setFolder(mDownloadDir)
+                            .build();
 
-                    downloadPb.postDelayed(new Runnable() {
+
+                    DownloadManager.getInstance().download(request, fuItemBean.getBundle(), new CallBack() {
                         @Override
-                        public void run() {
+                        public void onStarted() {
+                            downloadPb.setVisibility(View.VISIBLE);
+                            download.setVisibility(View.GONE);
+                        }
+
+                        @Override
+                        public void onConnecting() {
+
+                        }
+
+                        @Override
+                        public void onConnected(long total, boolean isRangeSupport) {
+
+                        }
+
+                        @Override
+                        public void onProgress(long finished, long total, int progress) {
+
+                        }
+
+                        @Override
+                        public void onCompleted() {
+
                             downloadPb.setVisibility(View.GONE);
                         }
-                    },2000);
+
+                        @Override
+                        public void onDownloadPaused() {
+
+                        }
+
+                        @Override
+                        public void onDownloadCanceled() {
+
+                        }
+
+                        @Override
+                        public void onFailed(DownloadException e) {
+                            downloadPb.setVisibility(View.GONE);
+                            download.setVisibility(View.VISIBLE);
+                        }
+                    });
+
 
                 }
             });
 
-        //    https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1508130039450&di=1ca02bd97a8f344ccb327e836fecc9fc&imgtype=0&src=http%3A%2F%2Fwww.51edu.com%2Fueditor2014%2Fphp%2Fupload%2Fimage%2F20150216%2F1424069121411681.png
         }
 
         public void bindData(FuItemBean fuItemBean){
+
+            //如果本地有的话，不现实下载按钮，
+            this.fuItemBean = fuItemBean;
+
+
+
             Glide.with(mContext).load(fuItemBean.getIcon()).diskCacheStrategy(DiskCacheStrategy.ALL).priority(Priority.LOW).into(fuIcon);
         }
 

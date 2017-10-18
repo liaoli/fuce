@@ -1,11 +1,14 @@
 package livestartv.livestar.com.fu;
 
+import android.Manifest;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
@@ -15,7 +18,12 @@ import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+import pub.devrel.easypermissions.EasyPermissions;
+
+public class MainActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks {
+
+    private static final int RC_CAMERA_AND_WIFI = 100;
+    private static final String TAG = "EasyPermissions";
 
     private ViewStub viewStub;
 
@@ -27,11 +35,18 @@ public class MainActivity extends AppCompatActivity {
     private FragmentPagerAdapter fragmentPagerAdapter;
     private CirclePageIndicator fuIndicator;
 
+    String[] perms = {Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.WRITE_EXTERNAL_STORAGE};
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        if(!EasyPermissions.hasPermissions(this,perms)){
+
+            EasyPermissions.requestPermissions(this, "需要读写sdcard 的权限",
+                    RC_CAMERA_AND_WIFI, perms);
+        }
 
         Gson gson = new Gson();
 
@@ -121,6 +136,29 @@ public class MainActivity extends AppCompatActivity {
             fragments.add(FupageFragment.newInstance(fuItemBeens.subList(start,end)));
         }
 
+
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+
+    }
+
+    @Override
+    public void onPermissionsGranted(int requestCode, List<String> perms) {
+        for(String s : perms){
+            Log.e(TAG,"onPermissionsGranted -------------->requestCode = "  + requestCode + ",perms:" + s );
+        }
+
+    }
+
+    @Override
+    public void onPermissionsDenied(int requestCode, List<String> perms) {
+        for(String s : perms){
+            Log.e(TAG,"onPermissionsDenied -------------->requestCode = "  + requestCode + ",perms:" + s );
+        }
 
     }
 }
