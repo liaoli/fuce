@@ -3,6 +3,7 @@ package livestartv.livestar.com.fu;
 import android.content.Context;
 import android.os.Environment;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -94,45 +95,50 @@ public class FupageAdapter extends RecyclerView.Adapter<FupageAdapter.FuHolder> 
 
 
                     DownloadManager.getInstance().download(request, fuItemBean.getBundle(), new CallBack() {
+                        public static final String TAG = "DownloadCallBack";
+
                         @Override
                         public void onStarted() {
                             downloadPb.setVisibility(View.VISIBLE);
                             download.setVisibility(View.GONE);
+                            Log.e(TAG, "onStarted()");
                         }
 
                         @Override
                         public void onConnecting() {
-
+                            Log.e(TAG, "onConnecting()");
                         }
 
                         @Override
                         public void onConnected(long total, boolean isRangeSupport) {
-
+                            Log.e(TAG, "onConnected() , total = " + total  +  ",isRangeSupport = " + isRangeSupport );
                         }
 
                         @Override
                         public void onProgress(long finished, long total, int progress) {
-
+                            Log.e(TAG, "onProgress() ,finished="+finished + ", total = " + total  +  ",progress = " + progress );
                         }
 
                         @Override
                         public void onCompleted() {
-
+                            Log.e(TAG, "onCompleted()");
                             downloadPb.setVisibility(View.GONE);
                         }
 
                         @Override
                         public void onDownloadPaused() {
-
+                            Log.e(TAG, "onDownloadPaused()");
                         }
 
                         @Override
                         public void onDownloadCanceled() {
-
+                            Log.e(TAG, "onDownloadCanceled()");
                         }
 
                         @Override
                         public void onFailed(DownloadException e) {
+
+                            Log.e(TAG, "onFailed()" +  e);
                             downloadPb.setVisibility(View.GONE);
                             download.setVisibility(View.VISIBLE);
                         }

@@ -46,6 +46,10 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
             EasyPermissions.requestPermissions(this, "需要读写sdcard 的权限",
                     RC_CAMERA_AND_WIFI, perms);
+            Log.e(TAG,"无读写sdcard 的权限");
+
+        }else{
+            Log.e(TAG,"有读写sdcard 的权限");
         }
 
         Gson gson = new Gson();

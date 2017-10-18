@@ -14,6 +14,8 @@ import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 
+import javax.net.ssl.HttpsURLConnection;
+
 /**
  * Created by Aspsine on 2015/7/20.
  */
@@ -77,7 +79,14 @@ public class ConnectTaskImpl implements ConnectTask {
     }
 
     private void executeConnection() throws DownloadException {
+
+
         mStartTime = System.currentTimeMillis();
+
+        HttpsURLConnection.setDefaultSSLSocketFactory(SSLSocketClient.getSSLSocketFactory());
+        HttpsURLConnection.setDefaultHostnameVerifier(SSLSocketClient.getHostnameVerifier());
+
+
         HttpURLConnection httpConnection = null;
         final URL url;
         try {
