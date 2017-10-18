@@ -26,8 +26,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-       // mIv_img = (ImageView) findViewById(R.id.iv_img);
+        setContentView(R.layout.activity_main_2);
+        mIv_img = (ImageView) findViewById(R.id.iv_img);
     }
 
     public void getHttpsHtml(View view) {

@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.Priority;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import java.util.List;
@@ -96,7 +97,7 @@ public class FupageAdapter extends RecyclerView.Adapter<FupageAdapter.FuHolder> 
         }
 
         public void bindData(FuItemBean fuItemBean){
-            Glide.with(mContext).load(fuItemBean.getIcon()).diskCacheStrategy(DiskCacheStrategy.ALL).into(fuIcon);
+            Glide.with(mContext).load(fuItemBean.getIcon()).diskCacheStrategy(DiskCacheStrategy.ALL).priority(Priority.LOW).into(fuIcon);
         }
 
     }
