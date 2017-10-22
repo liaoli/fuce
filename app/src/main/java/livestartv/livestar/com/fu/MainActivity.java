@@ -13,8 +13,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
 
+import com.aspsine.multithreaddownload.DownloadInfo;
+import com.aspsine.multithreaddownload.DownloadManager;
 import com.google.gson.Gson;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -116,9 +119,21 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
     }
 
+
+    private static final DecimalFormat DF = new DecimalFormat("0.00");
+    private String getDownloadPerSize(long finished, long total) {
+        return DF.format((float) finished / (1024 * 1024)) + "M/" + DF.format((float) total / (1024 * 1024)) + "M";
+    }
+
     private void initfuDatas(List<FuItemBean> fuItemBeens) {
-
-
+        for (FuItemBean info : fuItemBeens) {
+            DownloadInfo downloadInfo = DownloadManager.getInstance().getDownloadInfo(info.getBundle());
+            if (downloadInfo != null) {
+                info.setProgress(downloadInfo.getProgress());
+                info.setDownloadPerSize(getDownloadPerSize(downloadInfo.getFinished(), downloadInfo.getLength()));
+                info.setDownload(downloadInfo.getFinished() == downloadInfo.getLength()+1);
+            }
+        }
         int pageCount = 10;
         int count = fuItemBeens.size();
         boolean flag = false;
@@ -163,6 +178,11 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         for(String s : perms){
             Log.e(TAG,"onPermissionsDenied -------------->requestCode = "  + requestCode + ",perms:" + s );
         }
+    }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        DownloadManager.getInstance().pauseAll();
     }
 }

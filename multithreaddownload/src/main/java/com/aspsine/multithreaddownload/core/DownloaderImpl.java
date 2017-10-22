@@ -172,7 +172,7 @@ public class DownloaderImpl implements Downloader, ConnectTask.OnConnectListener
     @Override
     public void onDownloadCompleted() {
         if (isAllComplete()) {
-            deleteFromDB();
+           // deleteFromDB();
             mStatus = DownloadStatus.STATUS_COMPLETED;
             mResponse.onDownloadCompleted();
             onDestroy();

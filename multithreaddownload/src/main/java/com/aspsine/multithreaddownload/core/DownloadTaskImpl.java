@@ -23,6 +23,8 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.Map;
 
+import javax.net.ssl.HttpsURLConnection;
+
 /**
  * Created by Aspsine on 2015/7/27.
  */
@@ -133,8 +135,12 @@ public abstract class DownloadTaskImpl implements DownloadTask {
             throw new DownloadException(DownloadStatus.STATUS_FAILED, "Bad url.", e);
         }
 
+        HttpsURLConnection.setDefaultSSLSocketFactory(SSLSocketClient.getSSLSocketFactory());
+        HttpsURLConnection.setDefaultHostnameVerifier(SSLSocketClient.getHostnameVerifier());
+
         HttpURLConnection httpConnection = null;
         try {
+
             httpConnection = (HttpURLConnection) url.openConnection();
             httpConnection.setConnectTimeout(HTTP.CONNECT_TIME_OUT);
             httpConnection.setReadTimeout(HTTP.READ_TIME_OUT);
@@ -203,12 +209,13 @@ public abstract class DownloadTaskImpl implements DownloadTask {
                 }
                 raf.write(buffer, 0, len);
                 mThreadInfo.setFinished(mThreadInfo.getFinished() + len);
+                updateDB(mThreadInfo);
                 synchronized (mOnDownloadListener) {
                     mDownloadInfo.setFinished(mDownloadInfo.getFinished() + len);
                     mOnDownloadListener.onDownloadProgress(mDownloadInfo.getFinished(), mDownloadInfo.getLength());
                 }
             } catch (IOException e) {
-                updateDB(mThreadInfo);
+               updateDB(mThreadInfo);
                 throw new DownloadException(DownloadStatus.STATUS_FAILED, e);
             }
         }

@@ -7,6 +7,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.GlideBuilder;
 import com.bumptech.glide.load.model.GlideUrl;
 import com.bumptech.glide.module.GlideModule;
+import com.facebook.stetho.okhttp3.StethoInterceptor;
 
 import java.io.InputStream;
 
@@ -32,7 +33,8 @@ public class OkHttpGlideModule implements GlideModule {
 
     @Override
     public void registerComponents(Context context, Glide glide) {
-        OkHttpClient mHttpClient = new OkHttpClient().newBuilder()
+        OkHttpClient mHttpClient = new OkHttpClient().newBuilder().
+        addNetworkInterceptor(new StethoInterceptor())
                 .sslSocketFactory(SSLSocketClient.getSSLSocketFactory())
                 .hostnameVerifier(SSLSocketClient.getHostnameVerifier())
                 .build();

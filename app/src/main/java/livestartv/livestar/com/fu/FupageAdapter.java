@@ -36,7 +36,7 @@ public class FupageAdapter extends RecyclerView.Adapter<FupageAdapter.FuHolder> 
 
     private final File mDownloadDir = new File(Environment.getExternalStorageDirectory(), "Download");
 
-    public FupageAdapter(Context mContext,List<FuItemBean> datas) {
+    public FupageAdapter(Context mContext, List<FuItemBean> datas) {
         this.mContext = mContext;
         this.datas = datas;
         mInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -67,15 +67,14 @@ public class FupageAdapter extends RecyclerView.Adapter<FupageAdapter.FuHolder> 
     }
 
 
-   public  class FuHolder extends RecyclerView.ViewHolder{
+    public class FuHolder extends RecyclerView.ViewHolder {
 
-        ImageView fuIcon , download;
+        ImageView fuIcon, download;
         ProgressBar downloadPb;
-       FuItemBean fuItemBean;
+        FuItemBean fuItemBean;
 
 
-
-        public FuHolder(View itemView) {
+        public FuHolder(final View itemView) {
             super(itemView);
 
             fuIcon = (ImageView) itemView.findViewById(R.id.iv_fu_icon);
@@ -84,65 +83,79 @@ public class FupageAdapter extends RecyclerView.Adapter<FupageAdapter.FuHolder> 
 
             downloadPb = (ProgressBar) itemView.findViewById(R.id.download_pb);
 
-            download.setOnClickListener(new View.OnClickListener() {
+            itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    DownloadRequest request = new DownloadRequest.Builder()
-                            .setName(fuItemBean.getName() + ".bundle")
-                            .setUri(fuItemBean.getBundle())
-                            .setFolder(mDownloadDir)
-                            .build();
+                    if (!fuItemBean.isDownload()) {
+                        DownloadRequest request = new DownloadRequest.Builder()
+                                .setName(fuItemBean.getName() + ".bundle")
+                                .setUri(fuItemBean.getBundle())
+                                .setFolder(mDownloadDir)
+                                .build();
 
 
-                    DownloadManager.getInstance().download(request, fuItemBean.getBundle(), new CallBack() {
-                        public static final String TAG = "DownloadCallBack";
+                        DownloadManager.getInstance().download(request, fuItemBean.getBundle(), new CallBack() {
+                            public static final String TAG = "DownloadCallBack";
 
-                        @Override
-                        public void onStarted() {
-                            downloadPb.setVisibility(View.VISIBLE);
-                            download.setVisibility(View.GONE);
-                            Log.e(TAG, "onStarted()");
+                            @Override
+                            public void onStarted() {
+                                downloadPb.setVisibility(View.VISIBLE);
+                                download.setVisibility(View.GONE);
+                                Log.e(TAG, "onStarted()");
+                            }
+
+                            @Override
+                            public void onConnecting() {
+                                Log.e(TAG, "onConnecting()");
+                            }
+
+                            @Override
+                            public void onConnected(long total, boolean isRangeSupport) {
+                                Log.e(TAG, "onConnected() , total = " + total + ",isRangeSupport = " + isRangeSupport);
+                            }
+
+                            @Override
+                            public void onProgress(long finished, long total, int progress) {
+                                Log.e(TAG, "onProgress() ,finished=" + finished + ", total = " + total + ",progress = " + progress);
+                            }
+
+                            @Override
+                            public void onCompleted() {
+                                Log.e(TAG, "onCompleted()");
+                                downloadPb.setVisibility(View.GONE);
+                                fuItemBean.setDownload(true);
+                            }
+
+                            @Override
+                            public void onDownloadPaused() {
+                                Log.e(TAG, "onDownloadPaused()");
+                            }
+
+                            @Override
+                            public void onDownloadCanceled() {
+                                Log.e(TAG, "onDownloadCanceled()");
+                            }
+
+                            @Override
+                            public void onFailed(DownloadException e) {
+
+                                Log.e(TAG, "onFailed()" + e);
+                                downloadPb.setVisibility(View.GONE);
+                                download.setVisibility(View.VISIBLE);
+                            }
+                        });
+                    } else {
+                        if(fuItemBean.isSelected()){
+
+                            itemView.setBackgroundResource(0);
+                            fuItemBean.setSelected(false);
+
+                        }else{
+
+                            itemView.setBackgroundResource(R.drawable.fu_item_selected_bg);
+                            fuItemBean.setSelected(true);
                         }
-
-                        @Override
-                        public void onConnecting() {
-                            Log.e(TAG, "onConnecting()");
-                        }
-
-                        @Override
-                        public void onConnected(long total, boolean isRangeSupport) {
-                            Log.e(TAG, "onConnected() , total = " + total  +  ",isRangeSupport = " + isRangeSupport );
-                        }
-
-                        @Override
-                        public void onProgress(long finished, long total, int progress) {
-                            Log.e(TAG, "onProgress() ,finished="+finished + ", total = " + total  +  ",progress = " + progress );
-                        }
-
-                        @Override
-                        public void onCompleted() {
-                            Log.e(TAG, "onCompleted()");
-                            downloadPb.setVisibility(View.GONE);
-                        }
-
-                        @Override
-                        public void onDownloadPaused() {
-                            Log.e(TAG, "onDownloadPaused()");
-                        }
-
-                        @Override
-                        public void onDownloadCanceled() {
-                            Log.e(TAG, "onDownloadCanceled()");
-                        }
-
-                        @Override
-                        public void onFailed(DownloadException e) {
-
-                            Log.e(TAG, "onFailed()" +  e);
-                            downloadPb.setVisibility(View.GONE);
-                            download.setVisibility(View.VISIBLE);
-                        }
-                    });
+                    }
 
 
                 }
@@ -150,12 +163,22 @@ public class FupageAdapter extends RecyclerView.Adapter<FupageAdapter.FuHolder> 
 
         }
 
-        public void bindData(FuItemBean fuItemBean){
+        public void bindData(FuItemBean fuItemBean) {
 
             //如果本地有的话，不现实下载按钮，
             this.fuItemBean = fuItemBean;
 
+            if (fuItemBean.isSelected()) {
+                itemView.setBackgroundResource(R.drawable.fu_item_selected_bg);
+            }else{
+                itemView.setBackgroundResource(0);
+            }
 
+            if(fuItemBean.isDownload()) {
+                download.setVisibility(View.GONE);
+            }else{
+                download.setVisibility(View.VISIBLE);
+            }
 
             Glide.with(mContext).load(fuItemBean.getIcon()).diskCacheStrategy(DiskCacheStrategy.ALL).priority(Priority.LOW).into(fuIcon);
         }
