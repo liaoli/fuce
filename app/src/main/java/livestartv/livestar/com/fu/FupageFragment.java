@@ -17,11 +17,17 @@ import java.sql.Array;
 import java.util.ArrayList;
 import java.util.List;
 
+import rx.Subscription;
+import rx.functions.Action1;
+
 
 public class FupageFragment extends Fragment {
 
 
     List<FuItemBean> datas;
+    private Subscription subscription;
+    FuItemBean selectedFuItem;
+    private FupageAdapter adapter;
 
     public FupageFragment() {
         // Required empty public constructor
@@ -47,11 +53,40 @@ public class FupageFragment extends Fragment {
 
         rv.setHasFixedSize(true);
 
-        rv.setLayoutManager(new GridLayoutManager(getContext(),5));
+        rv.setLayoutManager(new GridLayoutManager(getContext(), 5));
 
-        FupageAdapter adapter = new FupageAdapter(getContext(),datas);
+        adapter = new FupageAdapter(getContext(), datas);
 
         rv.setAdapter(adapter);
+
+        subscription = RxBus.getInstance().toObservable(FuItemBean.class).subscribe(new Action1<FuItemBean>() {
+            @Override
+            public void call(FuItemBean fuItemBean) {
+
+                if (selectedFuItem != null) {
+                    selectedFuItem.setSelected(false);
+                }
+                if (datas.contains(fuItemBean)) {
+                    if (fuItemBean.equals(selectedFuItem)) {
+                        selectedFuItem = null;
+                        return;
+                    } else {
+                        selectedFuItem = fuItemBean;
+                    }
+                } else {
+                    selectedFuItem = null;
+                }
+                adapter.notifyDataSetChanged();
+            }
+
+
+        }, new Action1<Throwable>() {
+            @Override
+            public void call(Throwable throwable) {
+
+
+            }
+        });
 
 
     }
@@ -63,5 +98,9 @@ public class FupageFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_fupage, container, false);
     }
 
-
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        subscription.unsubscribe();
+    }
 }

@@ -147,7 +147,7 @@ public class FupageAdapter extends RecyclerView.Adapter<FupageAdapter.FuHolder> 
                     } else {
                         if(fuItemBean.isSelected()){
 
-                            itemView.setBackgroundResource(0);
+                            itemView.setBackground(null);
                             fuItemBean.setSelected(false);
 
                         }else{
@@ -155,6 +155,7 @@ public class FupageAdapter extends RecyclerView.Adapter<FupageAdapter.FuHolder> 
                             itemView.setBackgroundResource(R.drawable.fu_item_selected_bg);
                             fuItemBean.setSelected(true);
                         }
+                        RxBus.getInstance().post(fuItemBean);
                     }
 
 
@@ -171,7 +172,7 @@ public class FupageAdapter extends RecyclerView.Adapter<FupageAdapter.FuHolder> 
             if (fuItemBean.isSelected()) {
                 itemView.setBackgroundResource(R.drawable.fu_item_selected_bg);
             }else{
-                itemView.setBackgroundResource(0);
+                itemView.setBackground(null);
             }
 
             if(fuItemBean.isDownload()) {

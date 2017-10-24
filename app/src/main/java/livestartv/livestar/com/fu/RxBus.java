@@ -14,6 +14,10 @@ public class RxBus {
 
     private final Subject<Object, Object> bus;
 
+    public static RxBus getInstance(){
+        return defaultInstance;
+    }
+
     public RxBus() {
         bus = new SerializedSubject<>(PublishSubject.create());
     }
